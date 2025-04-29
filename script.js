@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let clickCount = 0;
     let lastClickTime = 0;
-    const minInterval = 200;
+    const minInterval = 400;
 
     const fullScreenWarning = document.createElement("div");
     fullScreenWarning.id = "click-warning";
