@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     tg.expand();
 
-    tg.MainButton.setText("Отправить данные");
+    tg.MainButton.setText("Закончить фарм");
     tg.MainButton.show();
 
     tg.MainButton.onClick(() => {
