@@ -1,0 +1,35 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#container {
+    text-align: center;
+}
+
+#click-count {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+#click-button {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    font-size: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#click-button:active {
+    background-color: #0056b3;
+}
