@@ -38,9 +38,32 @@ document.addEventListener("DOMContentLoaded", function () {
 	document.body.appendChild(fullScreenWarning);
 
 	// Анимация кнопки
-	clickButton.style.transition = "transform 0.15s ease";
+	// clickButton.style.transition = "transform 0.15s ease"; // Перенесено в CSS
 
-	clickButton.addEventListener("click", () => {
+	// Функция для создания всплывающего текста +1
+	function showPlusOne(event) {
+		const plusOne = document.createElement('div');
+		plusOne.textContent = '+1';
+		plusOne.classList.add('plus-one');
+		document.body.appendChild(plusOne); // Добавляем на страницу
+
+		// Позиционируем относительно клика (если событие доступно)
+		const x = event.clientX || (clickButton.offsetLeft + clickButton.offsetWidth / 2);
+		const y = event.clientY || clickButton.offsetTop;
+
+		// Рандомизируем горизонтальное положение для разнообразия
+		const randomXOffset = Math.random() * 40 - 20; // от -20px до +20px
+
+		plusOne.style.left = `${x + randomXOffset}px`;
+		plusOne.style.top = `${y}px`;
+
+		// Удаляем элемент после завершения анимации
+		plusOne.addEventListener('animationend', () => {
+			plusOne.remove();
+		});
+	}
+
+	clickButton.addEventListener("click", (event) => { // Добавляем event
 		const now = Date.now();
 
 		// Удаляем старые клики (старше 3 секунд)
@@ -63,6 +86,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		clickCount++;
 		clickCountElement.textContent = clickCount;
+
+		showPlusOne(event); // Вызываем функцию для показа +1
 	});
 
 	const tg = window.Telegram.WebApp;
