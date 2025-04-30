@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	let clickCount = 0;
 	let clickTimestamps = [];
-	const maxClicksPer3s = 5;
+	const maxClicksPer3s = 28;
 
 	const fullScreenWarning = document.createElement("div");
 	fullScreenWarning.id = "click-warning";
