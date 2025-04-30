@@ -1,75 +1,86 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const clickCountElement = document.getElementById("click-count");
-    const clickButton = document.getElementById("click-button");
-    const warningText = document.getElementById("warning");
+	const clickCountElement = document.getElementById("click-count");
+	const clickButton = document.getElementById("click-button");
+	const warningText = document.getElementById("warning");
 
-    if (window.Telegram && window.Telegram.WebApp) {
-        const userAgent = navigator.userAgent;
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
+	if (window.Telegram && window.Telegram.WebApp) {
+		const userAgent = navigator.userAgent;
+		const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
 
-        if (!isMobile) {
-            clickButton.style.display = "none";
-            warningText.style.display = "block";
-        }
-    }
+		if (!isMobile) {
+			clickButton.style.display = "none";
+			warningText.style.display = "block";
+		}
+	}
 
-    let clickCount = 0;
-    let lastClickTime = 0;
-    const minInterval = 1500;
+	let clickCount = 0;
+	let clickTimestamps = [];
+	const maxClicksPer3s = 5;
 
-    const fullScreenWarning = document.createElement("div");
-    fullScreenWarning.id = "click-warning";
-    fullScreenWarning.textContent = "Воу-воу-воу, полегче!";
-    Object.assign(fullScreenWarning.style, {
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.85)",
-        color: "white",
-        fontSize: "32px",
-        zIndex: 9999,
-        display: "none"
-    });
-    document.body.appendChild(fullScreenWarning);
+	const fullScreenWarning = document.createElement("div");
+	fullScreenWarning.id = "click-warning";
+	fullScreenWarning.textContent = "Воу-воу-воу, полегче!";
+	Object.assign(fullScreenWarning.style, {
+		position: "fixed",
+		top: 0,
+		left: 0,
+		width: "100%",
+		height: "100%",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "rgba(0, 0, 0, 0.85)",
+		color: "white",
+		fontSize: "32px",
+		zIndex: 9999,
+		display: "none"
+	});
+	document.body.appendChild(fullScreenWarning);
 
-    clickButton.addEventListener("click", () => {
-        const now = Date.now();
-        const interval = now - lastClickTime;
+	// Анимация кнопки
+	clickButton.style.transition = "transform 0.15s ease";
 
-        if (interval < minInterval) {
-            fullScreenWarning.style.display = "flex";
-            setTimeout(() => {
-                fullScreenWarning.style.display = "none";
-            }, 1500);
-            return;
-        }
+	clickButton.addEventListener("click", () => {
+		const now = Date.now();
 
-        lastClickTime = now;
-        clickCount++;
-        clickCountElement.textContent = clickCount;
-    });
+		// Удаляем старые клики (старше 3 секунд)
+		clickTimestamps = clickTimestamps.filter(t => now - t <= 3000);
+		clickTimestamps.push(now);
 
-    const tg = window.Telegram.WebApp;
+		// Проверка на бота
+		if (clickTimestamps.length > maxClicksPer3s) {
+			fullScreenWarning.style.display = "flex";
+			setTimeout(() => {
+				fullScreenWarning.style.display = "none";
+			}, 2000);
+			return;
+		}
 
-    tg.expand();
-    tg.MainButton.setText("Отправить данные");
-    tg.MainButton.show();
+		clickButton.style.transform = "scale(1.15)";
+		setTimeout(() => {
+			clickButton.style.transform = "scale(1)";
+		}, 150);
 
-    tg.MainButton.onClick(() => {
-        const clickCount = document.getElementById("click-count").textContent;
+		clickCount++;
+		clickCountElement.textContent = clickCount;
+	});
 
-        try {
-            tg.sendData(JSON.stringify({ clicks: parseInt(clickCount, 10) }));
-            console.log("✅ Данные отправлены:", clickCount);
-        } catch (error) {
-            console.error("❌ Ошибка отправки данных:", error);
-        }
+	const tg = window.Telegram.WebApp;
 
-        tg.close();
-    });
+	tg.expand();
+	tg.MainButton.setText("Отправить данные");
+	tg.MainButton.show();
+
+	tg.MainButton.onClick(() => {
+		const clickCount = document.getElementById("click-count").textContent;
+
+		try {
+			tg.sendData(JSON.stringify({ clicks: parseInt(clickCount, 10) }));
+			console.log("✅ Данные отправлены:", clickCount);
+		} catch (error) {
+			console.error("❌ Ошибка отправки данных:", error);
+		}
+
+		tg.close();
+	});
 });
