@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const fullScreenWarning = document.createElement("div");
 	fullScreenWarning.id = "click-warning";
-	fullScreenWarning.textContent = "Воу-воу-воу, полегче!";
+	fullScreenWarning.textContent = "Слишком быстро!";
 	Object.assign(fullScreenWarning.style, {
 		position: "fixed",
 		top: 0,
@@ -37,40 +37,31 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 	document.body.appendChild(fullScreenWarning);
 
-	// Анимация кнопки
-	// clickButton.style.transition = "transform 0.15s ease"; // Перенесено в CSS
-
-	// Функция для создания всплывающего текста +1
 	function showPlusOne(event) {
 		const plusOne = document.createElement('div');
 		plusOne.textContent = '+1';
 		plusOne.classList.add('plus-one');
-		document.body.appendChild(plusOne); // Добавляем на страницу
+		document.body.appendChild(plusOne);
 
-		// Позиционируем относительно клика (если событие доступно)
 		const x = event.clientX || (clickButton.offsetLeft + clickButton.offsetWidth / 2);
 		const y = event.clientY || clickButton.offsetTop;
 
-		// Рандомизируем горизонтальное положение для разнообразия
-		const randomXOffset = Math.random() * 40 - 20; // от -20px до +20px
+		const randomXOffset = Math.random() * 40 - 20;
 
 		plusOne.style.left = `${x + randomXOffset}px`;
 		plusOne.style.top = `${y}px`;
 
-		// Удаляем элемент после завершения анимации
 		plusOne.addEventListener('animationend', () => {
 			plusOne.remove();
 		});
 	}
 
-	clickButton.addEventListener("click", (event) => { // Добавляем event
+	clickButton.addEventListener("click", (event) => {
 		const now = Date.now();
 
-		// Удаляем старые клики (старше 3 секунд)
 		clickTimestamps = clickTimestamps.filter(t => now - t <= 3000);
 		clickTimestamps.push(now);
 
-		// Проверка на бота
 		if (clickTimestamps.length > maxClicksPer3s) {
 			fullScreenWarning.style.display = "flex";
 			setTimeout(() => {
@@ -87,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		clickCount++;
 		clickCountElement.textContent = clickCount;
 
-		showPlusOne(event); // Вызываем функцию для показа +1
+		showPlusOne(event);
 	});
 
 	const tg = window.Telegram.WebApp;
@@ -101,9 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		try {
 			tg.sendData(JSON.stringify({ clicks: parseInt(clickCount, 10) }));
-			console.log("✅ Данные отправлены:", clickCount);
 		} catch (error) {
-			console.error("❌ Ошибка отправки данных:", error);
+			console.error("error sending message to telegram", error);
 		}
 
 		tg.close();
